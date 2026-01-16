@@ -19,7 +19,7 @@ model.train(
         workers=0,
         device='cpu',
         val=True,
-    )
+    )   
 #
 # # Load a pretrained YOLO11n model
 # model = YOLO("yolo11n.pt")
