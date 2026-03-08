@@ -9,9 +9,12 @@ from pathlib import Path
 
 import torch
 import torch.nn as nn
-
 from ultralytics.nn.autobackend import check_class_names
+
 from ultralytics.nn.modules import (
+# thêm BIFPN
+    BiFPN,
+    MHSA,
     AIFI,
     C1,
     C2,
@@ -1653,48 +1656,73 @@ def parse_model(d, ch, verbose=True):
             args = [ch[f]]
         elif m is Concat:
             c2 = sum(ch[x] for x in f)
+        # elif m is BiFPN:
+        #
+        #     # BiFPN nhận list channels từ nhiều layer trước
+        #
+        #     c1 = [ch[x] for x in f]  # ví dụ [512, 512, 1024]
+        #
+        #     c2 = args[0] if len(args) > 0 else 256
+        #
+        #     args = [c1, c2] + args[1:]  # truyền vào __init__(self, c1: list, c2: int)
+        #     if verbose:
+        #         print(f"DEBUG BiFPN: f={f}, in_channels={c1}, out_channels={c2}, args={args}")
         elif m in frozenset(
-            {
-                Detect,
-                WorldDetect,
-                YOLOEDetect,
-                Segment,
-                Segment26,
-                YOLOESegment,
-                YOLOESegment26,
-                Pose,
-                Pose26,
-                OBB,
-                OBB26,
-            }
+                {
+                    Detect,
+                    WorldDetect,
+                    YOLOEDetect,
+                    Segment,
+                    Segment26,
+                    YOLOESegment,
+                    YOLOESegment26,
+                    Pose,
+                    Pose26,
+                    OBB,
+                    OBB26,
+                }
         ):
             args.extend([reg_max, end2end, [ch[x] for x in f]])
             if m is Segment or m is YOLOESegment or m is Segment26 or m is YOLOESegment26:
                 args[2] = make_divisible(min(args[2], max_channels) * width, 8)
             if m in {Detect, YOLOEDetect, Segment, Segment26, YOLOESegment, YOLOESegment26, Pose, Pose26, OBB, OBB26}:
                 m.legacy = legacy
+
         elif m is v10Detect:
             args.append([ch[x] for x in f])
+
         elif m is ImagePoolingAttn:
             args.insert(1, [ch[x] for x in f])  # channels as second arg
-        elif m is RTDETRDecoder:  # special case, channels arg must be passed in index 1
+
+        elif m is RTDETRDecoder:  # special case
             args.insert(1, [ch[x] for x in f])
+
         elif m is CBLinear:
             c2 = args[0]
             c1 = ch[f]
             args = [c1, c2, *args[1:]]
+
         elif m is CBFuse:
             c2 = ch[f[-1]]
+
         elif m in frozenset({TorchVision, Index}):
             c2 = args[0]
             c1 = ch[f]
             args = [*args[1:]]
+
         elif m is CustomCBAM:
             c1 = ch[f]
             c2 = c1
             args = [c1, *args]
+        elif m is MHSA:
+            c1 = ch[f]
+            c2 = c1
+            args = [c1, *args]
         else:
-            c2 = ch[f]
+            c2 = args[0] if args else ch[f]
+            # KHÔNG dùng c2 = ch[f] nữa → tránh lỗi nếu f là list
+            # Nếu rơi vào đây, nên raise error để debug
+            raise ValueError(f"Unsupported module {m.__name__} with f={f} (type {type(f)})")
 
         m_ = torch.nn.Sequential(*(m(*args) for _ in range(n))) if n > 1 else m(*args)  # module
         t = str(m)[8:-2].replace("__main__.", "")  # module type

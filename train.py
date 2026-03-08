@@ -1,6 +1,14 @@
+import ultralytics.nn.modules as modules
+import inspect
+
+
+
+print(f"DEBUG: File BiFPN đang được load từ: {inspect.getfile(modules.BiFPN)}")
+import ultralytics.nn.tasks as tasks
+print(f"DEBUG: File tasks.py đang thực sự chạy tại: {tasks.__file__}")
 from ultralytics import YOLO
 
-model = YOLO(r'cfg/models/11/yolo11_test2.yaml')
+model = YOLO(r'cfg/models/11/yolo11_test3.yaml')
 model.info()
 
 model.train(
