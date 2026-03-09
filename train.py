@@ -8,7 +8,7 @@ import ultralytics.nn.tasks as tasks
 print(f"DEBUG: File tasks.py đang thực sự chạy tại: {tasks.__file__}")
 from ultralytics import YOLO
 
-model = YOLO(r'cfg/models/11/yolo11_test1.yaml')
+model = YOLO(r'cfg/models/11/yolo11_test5.yaml')
 model.info()
 
 model.train(

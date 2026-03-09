@@ -12,8 +12,7 @@ import torch.nn as nn
 from ultralytics.nn.autobackend import check_class_names
 
 from ultralytics.nn.modules import (
-# thêm BIFPN
-    BiFPN,
+    # thêm BIFPN
     MHSA,
     AIFI,
     C1,
@@ -74,7 +73,7 @@ from ultralytics.nn.modules import (
     YOLOEDetect,
     YOLOESegment,
     YOLOESegment26,
-    v10Detect,
+    v10Detect, BiFPN_Concat,
 )
 from ultralytics.nn.modules.cbam import CustomCBAM
 from ultralytics.utils import DEFAULT_CFG_DICT, LOGGER, YAML, colorstr, emojis
@@ -1318,8 +1317,7 @@ def temporary_modules(modules=None, attributes=None):
 
     Args:
         modules (dict, optional): A dictionary mapping old module paths to new module paths.
-        attributes (dict, optional): A dictionary mapping old module attributes to new module attributes.
-
+        attributes (dict, optional): A dictionary mapping old module attributes to new module attributes.F
     Examples:
         >>> with temporary_modules({"old.module": "new.module"}, {"old.module.attribute": "new.module.attribute"}):
         >>> import old.module  # this will now import new.module
@@ -1654,21 +1652,11 @@ def parse_model(d, ch, verbose=True):
             c2 = args[1] if args[3] else args[1] * 4
         elif m is torch.nn.BatchNorm2d:
             args = [ch[f]]
-        elif m is Concat:
+        elif m in {Concat, BiFPN_Concat} :
             c2 = sum(ch[x] for x in f)
         elif m is torch.nn.Upsample:
             c2 = ch[f]
-        # elif m is BiFPN:
-        #
-        #     # BiFPN nhận list channels từ nhiều layer trước
-        #
-        #     c1 = [ch[x] for x in f]  # ví dụ [512, 512, 1024]
-        #
-        #     c2 = args[0] if len(args) > 0 else 256
-        #
-        #     args = [c1, c2] + args[1:]  # truyền vào __init__(self, c1: list, c2: int)
-        #     if verbose:
-        #         print(f"DEBUG BiFPN: f={f}, in_channels={c1}, out_channels={c2}, args={args}")
+
         elif m in frozenset(
                 {
                     Detect,

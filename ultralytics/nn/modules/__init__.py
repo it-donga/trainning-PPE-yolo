@@ -17,7 +17,7 @@ Examples:
     >>> subprocess.run(f"onnxslim {f} {f} && open {f}", shell=True, check=True)  # pip install onnxslim
 """
 from ultralytics.nn.modules.cbam import CustomCBAM
-from .bifpn import BiFPN
+from .BiFPN import BiFPN_Concat
 from .mhsa import MHSA
 from .block import (
     C1,
@@ -189,6 +189,6 @@ __all__ = (
     "YOLOESegment",
     "YOLOESegment26",
     "v10Detect",
-    "BiFPN",  # add
+    "BiFPN_Concat",  # add
     "MHSA" #add
 )
