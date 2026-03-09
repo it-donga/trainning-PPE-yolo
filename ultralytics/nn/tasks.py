@@ -1656,6 +1656,8 @@ def parse_model(d, ch, verbose=True):
             args = [ch[f]]
         elif m is Concat:
             c2 = sum(ch[x] for x in f)
+        elif m is torch.nn.Upsample:
+            c2 = ch[f]
         # elif m is BiFPN:
         #
         #     # BiFPN nhận list channels từ nhiều layer trước
@@ -1714,14 +1716,13 @@ def parse_model(d, ch, verbose=True):
             c1 = ch[f]
             c2 = c1
             args = [c1, *args]
-        elif m is MHSA:
-            c1 = ch[f]
-            c2 = c1
-            args = [c1, *args]
+        # elif m is MHSA:
+        #     c1 = ch[f]
+        #     c2 = c1
+        #     args = [c1, *args]
         else:
             c2 = args[0] if args else ch[f]
-            # KHÔNG dùng c2 = ch[f] nữa → tránh lỗi nếu f là list
-            # Nếu rơi vào đây, nên raise error để debug
+
             raise ValueError(f"Unsupported module {m.__name__} with f={f} (type {type(f)})")
 
         m_ = torch.nn.Sequential(*(m(*args) for _ in range(n))) if n > 1 else m(*args)  # module
