@@ -18,6 +18,7 @@ Examples:
 """
 from ultralytics.nn.modules.cbam import CustomCBAM
 from .BiFPN import BiFPN_Concat
+from .BiFPN_Add import BiFPN_Add
 from .mhsa import MHSA
 from .block import (
     C1,
@@ -190,5 +191,6 @@ __all__ = (
     "YOLOESegment26",
     "v10Detect",
     "BiFPN_Concat",  # add
+    "BiFPN_Add", # add
     "MHSA" #add
 )
