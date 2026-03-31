@@ -75,7 +75,8 @@ from ultralytics.nn.modules import (
     YOLOESegment26,
     v10Detect,
     BiFPN_Concat,
-    BiFPN_Add
+    BiFPN_Add,
+    CoordAtt
 )
 from ultralytics.nn.modules.cbam import CustomCBAM
 from ultralytics.utils import DEFAULT_CFG_DICT, LOGGER, YAML, colorstr, emojis
@@ -1658,6 +1659,10 @@ def parse_model(d, ch, verbose=True):
             c2 = sum(ch[x] for x in f)
         elif m is BiFPN_Add:
             c2 = ch[f[0]]  # 🔥 giữ nguyên channel
+        elif m is CoordAtt:
+            c1 = ch[f]
+            c2 = c1
+            args = [c1, *args]
         elif m is torch.nn.Upsample:
             c2 = ch[f]
 

@@ -20,6 +20,7 @@ from ultralytics.nn.modules.cbam import CustomCBAM
 from .BiFPN import BiFPN_Concat
 from .BiFPN_Add import BiFPN_Add
 from .mhsa import MHSA
+from .coordatt import CoordAtt
 from .block import (
     C1,
     C2,
@@ -192,5 +193,6 @@ __all__ = (
     "v10Detect",
     "BiFPN_Concat",  # add
     "BiFPN_Add", # add
-    "MHSA" #add
+    "MHSA", #add
+    "CoordAtt"
 )
