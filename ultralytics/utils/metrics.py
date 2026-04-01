@@ -85,6 +85,8 @@ def bbox_iou(
     GIoU: bool = False,
     DIoU: bool = False,
     CIoU: bool = False,
+    # Add
+    WIoU: bool = False,
     eps: float = 1e-7,
 ) -> torch.Tensor:
     """Calculate the Intersection over Union (IoU) between bounding boxes.
@@ -128,6 +130,17 @@ def bbox_iou(
 
     # IoU
     iou = inter / union
+    if WIoU:
+        beta = 0.2
+        alpha = 1.5
+
+        iou = iou.clamp(0, 1)
+
+        weight = torch.exp(-beta * (1 - iou) ** alpha)
+
+        return iou * weight
+
+    # ==================================
     if CIoU or DIoU or GIoU:
         cw = b1_x2.maximum(b2_x2) - b1_x1.minimum(b2_x1)  # convex (smallest enclosing box) width
         ch = b1_y2.maximum(b2_y2) - b1_y1.minimum(b2_y1)  # convex height
@@ -145,7 +158,6 @@ def bbox_iou(
         c_area = cw * ch + eps  # convex area
         return iou - (c_area - union) / c_area  # GIoU https://arxiv.org/pdf/1902.09630.pdf
     return iou  # IoU
-
 
 def mask_iou(mask1: torch.Tensor, mask2: torch.Tensor, eps: float = 1e-7) -> torch.Tensor:
     """Calculate masks IoU.
