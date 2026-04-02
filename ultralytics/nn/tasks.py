@@ -76,7 +76,8 @@ from ultralytics.nn.modules import (
     v10Detect,
     BiFPN_Concat,
     BiFPN_Add,
-    CoordAtt
+    CoordAtt,
+    SimAM
 )
 from ultralytics.nn.modules.cbam import CustomCBAM
 from ultralytics.utils import DEFAULT_CFG_DICT, LOGGER, YAML, colorstr, emojis
@@ -1717,6 +1718,8 @@ def parse_model(d, ch, verbose=True):
         #     c1 = ch[f]
         #     c2 = c1
         #     args = [c1, *args]
+        elif m is SimAM:
+            args = []
         else:
             c2 = args[0] if args else ch[f]
 

@@ -21,6 +21,7 @@ from .BiFPN import BiFPN_Concat
 from .BiFPN_Add import BiFPN_Add
 from .mhsa import MHSA
 from .coordatt import CoordAtt
+from .simam import SimAM
 from .block import (
     C1,
     C2,
@@ -194,5 +195,6 @@ __all__ = (
     "BiFPN_Concat",  # add
     "BiFPN_Add", # add
     "MHSA", #add
-    "CoordAtt"
+    "CoordAtt", #add,
+    "SimAM" #add
 )
